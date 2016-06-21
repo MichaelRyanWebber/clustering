@@ -14,8 +14,8 @@ from cluPt import *
 def testMat(returnPtObjs=False):
     mat = list()
 
-    for i in range(40):
-        for j in range(40):
+    for i in range(200):
+        for j in range(200):
             if (i % 4 == 0) and (j % 10 != 0):
                 mat.append([[i, j], -1])
             elif j % 8 == 0:
@@ -51,7 +51,7 @@ def joinClusters(clusters, ids):
 
 # cluster points that are within X of each other
 def clusterNNX(mat, X):
-    #clusters is list of lists of cluPts
+    # clusters is list of lists of cluPts
     clusters = list()
     clindex = 0
     clusters.append([mat[0]])
@@ -76,7 +76,7 @@ def clusterNNX(mat, X):
 
         # see if pt1 has been put into a cluster yet
         # if not, check the remaining points
-        if pt1.cluId == -1:
+        if pt1.inClu() == False:
             for pt2 in mat:
                 if (distance.euclidean(pt1.xy(), pt2.xy()) < X) and (pt1 != pt2):
                     clindex += 1
@@ -87,7 +87,7 @@ def clusterNNX(mat, X):
 
         # if still not in a cluster, we know this pt is
         # a singleton cluster
-        if pt1.cluId == -1:
+        if pt1.inClu() == False:
             clindex += 1
             pt1.cluId = clindex
             clusters.append([pt1])

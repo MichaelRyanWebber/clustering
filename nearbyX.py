@@ -5,11 +5,9 @@
 # in cluster size depending on the input data.
 
 from scipy.spatial import distance
-
 import plotly
 from plotly.graph_objs import Scatter, Layout
-from cluPt import *
-from decimal import Decimal
+from CluPt import *
 
 
 def testMat(returnPtObjs=False):
@@ -28,10 +26,10 @@ def testMat(returnPtObjs=False):
     del mat[4:6]
 
     if returnPtObjs == True:
-        matclupt = list()
+        matClupt = list()
         for index, pt in enumerate(mat):
-            matclupt.append(cluPt(pt[0][0], pt[0][1], index))
-        return matclupt
+            matClupt.append(CluPt(pt[0][0], pt[0][1], index))
+        return matClupt
 
     return mat
 

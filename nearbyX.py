@@ -122,7 +122,8 @@ def bucskterNNX(mat, X):
         joinIds = set()
 
         # check if this point was already added to a cluster
-        if pt1.inClu(): continue
+        if pt1.inClu():
+            continue
 
         # first check if this is a neighbor to an existing cluster
         for key in neighborkeys:
@@ -145,7 +146,8 @@ def bucskterNNX(mat, X):
 
         # see if pt1 has been put into a cluster yet
         # if not, check the remaining points
-        if pt1.inClu(): continue
+        if pt1.inClu():
+            continue
 
         for key in neighborkeys:
             # check if this bucket has clustered points

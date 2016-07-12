@@ -71,3 +71,9 @@ class Buckets:
         self.mBuckets[self.getKey(pt)].remove(pt)
         if len(self.mBuckets[self.getKey(pt)]) == 0:
             del self.mBuckets[self.getKey(pt)]
+
+    def allPoints(self):
+        all_list = list()
+        for bucket in self.mBuckets.itervalues():
+            all_list.extend(bucket)
+        return all_list

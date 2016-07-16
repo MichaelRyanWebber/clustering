@@ -10,6 +10,7 @@ from plotly.graph_objs import Scatter, Layout
 from clupt import *
 from geopy.distance import great_circle
 import csv
+import json
 
 def testMat(returnPtObjs=False):
     mat = list()
@@ -285,13 +286,8 @@ def verify_from_csv(path, maxRadius, path2):
             location_type = row[4]
             record_type = row[7]
 
-            # use the first point as a center for coordinate positions in feet
-            # if secondline:
-            #   center = tuple([lat, lng])
-            #   secondline = False
-
             # check if the location is junk, and we don't want to process
-            if location_type in ('APPROXIMATE','GEOMETRIC_CENTER'):
+            if location_type in ('APPROXIMATE', 'GEOMETRIC_CENTER'):
                 continue
 
             # get coords in terms of integer feet and x,y
@@ -363,12 +359,43 @@ def testCode():
     clusters = bucskterNNX(testMat(True), 2)
     graphClusters(clusters)
 
+def outputPts(original_path, output_path, buckets):
+    mat = buckets.allPoints()
+
+    outmat = list(dict())
+    ids = list()
+    with open(original_path, 'rU+') as file:
+        reader = csv.reader(file)
+        firstline = True
+        for row in reader:
+            if firstline:
+                # do shit with row labels yo
+                labels = row
+                firstline = False
+                continue
+
+            #see if this point is a verified lost leak
+            for pt in mat:
+                as_dict = dict()
+                if (row[0] == pt.originId) and (row[7] == '2014_leak'):
+                    for i, entry in enumerate(row):
+                        as_dict[labels[i]] = entry
+                    outmat.append(as_dict)
+                    break
+
+    with open(output_path, 'w+') as outfile:
+        json.dump(outmat, outfile)
+
 # testing code when run as main
 if __name__ == "__main__":
     pathtocsv1 = '/Users/mwebber/alsogit/NatGas/NatGas/data/combined_2014.CSV'
     pathtocsv2 = '/Users/mwebber/alsogit/NatGas/NatGas/data/leaks_appearing_in_both_2014_2015.CSV'
     maxRadius = 20
 
+    outpath = '/Users/mwebber/lostleaks.json'
+
     buckets = verify_from_csv(pathtocsv1, maxRadius, pathtocsv2)
-    clusters = clusterFromBucket(buckets)
-    graphClusters(clusters)
+    outputPts(pathtocsv1,outpath,buckets)
+
+    #clusters = clusterFromBucket(buckets)
+    #graphClusters(clusters)

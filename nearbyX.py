@@ -177,6 +177,7 @@ def bucskterNNX(mat, X):
 
     return clusters
 
+
 # this is almost exactly the code from bucksterNNX
 # but takes in already made buckets...
 def clusterFromBucket(buckets):
@@ -261,6 +262,7 @@ def clusterFromBucket(buckets):
 # run the clustering and fix checking stuff on the combined_2014.csv
 def verify_from_csv(path, maxRadius, path2):
     delimiter = ','
+    repairs_fix_leaks = list()
     # open with read/write and universal newline support
     with open(path, 'rU+') as file:
         reader = csv.reader(file, delimiter=delimiter)
@@ -284,6 +286,7 @@ def verify_from_csv(path, maxRadius, path2):
             lat = float(row[2])
             lng = float(row[3])
             location_type = row[4]
+            record_date = row[5]
             record_type = row[7]
 
             # check if the location is junk, and we don't want to process
@@ -305,14 +308,18 @@ def verify_from_csv(path, maxRadius, path2):
                 # find a cluster for this point
                 buckets.add(leak_clupt)
 
+
             if record_type == '2014_repaired':
                 # remove all points within distance of this repair
+                fixed = list()
                 fix_clupt = CluPt(x, y, id)
                 keys = buckets.getNeighborKeys(fix_clupt)
                 for key in keys:
                     for pt in buckets.getBucket(key):
                         if distance.euclidean(fix_clupt.xy(), pt.xy()) < maxRadius:
                             buckets.remove(pt)
+                            fixed.append(pt.originId)
+                repairs_fix_leaks.append({'record_date': record_date, 'repair_id': fix_clupt.originId, 'leak_ids': fixed})
 
     print 'Number of points at end of 2014 ', len(buckets.allPoints())
 
@@ -331,7 +338,7 @@ def verify_from_csv(path, maxRadius, path2):
 
     print 'Number of points not accounted for ', len(buckets.allPoints())
 
-    return buckets
+    return buckets, repairs_fix_leaks
 
 
 def graphClusters(clusters):
@@ -383,19 +390,31 @@ def outputPts(original_path, output_path, buckets):
                     outmat.append(as_dict)
                     break
 
-    with open(output_path, 'w+') as outfile:
+    with open(output_path, 'w') as outfile:
         json.dump(outmat, outfile)
 
 # testing code when run as main
 if __name__ == "__main__":
-    pathtocsv1 = '/Users/mwebber/alsogit/NatGas/NatGas/data/combined_2014.CSV'
-    pathtocsv2 = '/Users/mwebber/alsogit/NatGas/NatGas/data/leaks_appearing_in_both_2014_2015.CSV'
-    maxRadius = 20
+    datapath = '/Users/mwebber/alsogit/NatGas/NatGas/data/'
+    company = 'eversource'
 
-    outpath = '/Users/mwebber/lostleaks.json'
+    leaks_and_repairs = company + '_combined_leaks_and_repairs_2014.CSV'
+    leaks_in_both_years = company + '_leaks_appearing_in_2014_and_2015.CSV'
+    pathtocsv1 = datapath + '/' + company + '/' + leaks_and_repairs
+    pathtocsv2 = datapath + '/' + company + '/' + leaks_in_both_years
+    maxRadius = 100
 
-    buckets = verify_from_csv(pathtocsv1, maxRadius, pathtocsv2)
-    outputPts(pathtocsv1,outpath,buckets)
+    outpath = datapath + '/' + company + '/' + \
+              company + '_' + 'lostleaks_combined_2014_' + str(maxRadius) + '.json'
+
+    outpath_repairs = datapath + '/' + company + '/' + \
+              company + '_' + 'repairs_' + str(maxRadius) + '.json'
+
+    buckets, repairs_fix_leaks = verify_from_csv(pathtocsv1, maxRadius, pathtocsv2)
+    outputPts(pathtocsv1, outpath, buckets)
+
+    with open(outpath_repairs, 'w') as outfile:
+        json.dump(repairs_fix_leaks, outfile)
 
     #clusters = clusterFromBucket(buckets)
     #graphClusters(clusters)

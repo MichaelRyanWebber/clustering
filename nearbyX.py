@@ -283,6 +283,7 @@ def verify_from_csv(path, maxRadius, path2):
             # id,formatted_address,lat,lng,location_type,record_date,grade,record_type
             # populate these USEFUL VARIABLES
             id = row[0]
+            formatted_address = row[1]
             lat = float(row[2])
             lng = float(row[3])
             location_type = row[4]
@@ -290,7 +291,7 @@ def verify_from_csv(path, maxRadius, path2):
             record_type = row[7]
 
             # check if the location is junk, and we don't want to process
-            if location_type in ('APPROXIMATE', 'GEOMETRIC_CENTER'):
+            if 'APPROXIMATE' in location_type or 'GEOMETRIC_CENTER' in location_type: 
                 continue
 
             # get coords in terms of integer feet and x,y
@@ -395,14 +396,14 @@ def outputPts(original_path, output_path, buckets):
 
 # testing code when run as main
 if __name__ == "__main__":
-    datapath = '/Users/mwebber/alsogit/NatGas/NatGas/data/'
-    company = 'eversource'
+    datapath = '/Users/arcarter/code/NatGas/data'
+    company = 'ngrid'
 
     leaks_and_repairs = company + '_combined_leaks_and_repairs_2014.CSV'
     leaks_in_both_years = company + '_leaks_appearing_in_2014_and_2015.CSV'
     pathtocsv1 = datapath + '/' + company + '/' + leaks_and_repairs
     pathtocsv2 = datapath + '/' + company + '/' + leaks_in_both_years
-    maxRadius = 100
+    maxRadius = 20
 
     outpath = datapath + '/' + company + '/' + \
               company + '_' + 'lostleaks_combined_2014_' + str(maxRadius) + '.json'

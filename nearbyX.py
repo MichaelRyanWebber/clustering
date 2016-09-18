@@ -308,7 +308,6 @@ def verify_from_csv(path, maxRadius, path2):
                 # find a cluster for this point
                 buckets.add(leak_clupt)
 
-
             if record_type == '2014_repaired':
                 # remove all points within distance of this repair
                 fixed = list()
@@ -396,19 +395,23 @@ def outputPts(original_path, output_path, buckets):
 # testing code when run as main
 if __name__ == "__main__":
     datapath = '/Users/mwebber/alsogit/NatGas/NatGas/data/'
-    company = 'eversource'
 
-    leaks_and_repairs = company + '_combined_leaks_and_repairs_2014.CSV'
+    # company = 'ngrid'
+    company = 'eversource'
+    maxRadius = 20
+    offset = ''
+    offset = '_offset'
+
+    leaks_and_repairs = company + '_combined_leaks_and_repairs_2014' + offset + '.CSV'
     leaks_in_both_years = company + '_leaks_appearing_in_2014_and_2015.CSV'
     pathtocsv1 = datapath + '/' + company + '/' + leaks_and_repairs
     pathtocsv2 = datapath + '/' + company + '/' + leaks_in_both_years
-    maxRadius = 100
 
     outpath = datapath + '/' + company + '/' + \
-              company + '_' + 'lostleaks_combined_2014_' + str(maxRadius) + '.json'
+              company + '_' + 'lostleaks_combined_2014_' + str(maxRadius) + offset + '.json'
 
     outpath_repairs = datapath + '/' + company + '/' + \
-              company + '_' + 'repairs_' + str(maxRadius) + '.json'
+              company + '_' + 'repairs_' + str(maxRadius) + offset + '.json'
 
     buckets, repairs_fix_leaks = verify_from_csv(pathtocsv1, maxRadius, pathtocsv2)
     outputPts(pathtocsv1, outpath, buckets)

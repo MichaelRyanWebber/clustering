@@ -1,0 +1,8 @@
+geopy==1.11.0
+numpy==1.11.1
+plotly==1.12.4
+python-dateutil==2.5.3
+pytz==2016.6.1
+requests==2.10.0
+scipy==0.18.0
+six==1.10.0

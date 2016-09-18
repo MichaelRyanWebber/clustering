@@ -283,6 +283,7 @@ def verify_from_csv(path, maxRadius, path2):
             # id,formatted_address,lat,lng,location_type,record_date,grade,record_type
             # populate these USEFUL VARIABLES
             id = row[0]
+            formatted_address = row[1]
             lat = float(row[2])
             lng = float(row[3])
             location_type = row[4]
@@ -290,7 +291,7 @@ def verify_from_csv(path, maxRadius, path2):
             record_type = row[7]
 
             # check if the location is junk, and we don't want to process
-            if location_type in ('APPROXIMATE', 'GEOMETRIC_CENTER'):
+            if 'APPROXIMATE' in location_type or 'GEOMETRIC_CENTER' in location_type:
                 continue
 
             # get coords in terms of integer feet and x,y
